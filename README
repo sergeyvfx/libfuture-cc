@@ -1,0 +1,3 @@
+libfuture-c++ is aimed to make it easier to use some of C++11 features with
+older compilers, without being doomed to add really huge libraries as extra
+dependency to the project.
