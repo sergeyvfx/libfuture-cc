@@ -78,9 +78,13 @@ class function_base {
     delete function_bind_;
   }
 
-  bool is_bound() {
+  bool is_bound() const {
     return function_bind_ != NULL &&
            function_bind_->is_bound();
+  }
+
+  operator bool() const {
+    return is_bound();
   }
 
 #define FUNCTION_INVOKE_COMMON_PRE \
