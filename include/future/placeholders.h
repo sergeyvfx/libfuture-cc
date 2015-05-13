@@ -27,6 +27,15 @@ namespace future {
 namespace placeholders {
 
 future::internal::argument_wrapper_base _1(true, 0);
+future::internal::argument_wrapper_base _2(true, 1);
+future::internal::argument_wrapper_base _3(true, 2);
+future::internal::argument_wrapper_base _4(true, 3);
+future::internal::argument_wrapper_base _5(true, 4);
+future::internal::argument_wrapper_base _6(true, 5);
+future::internal::argument_wrapper_base _7(true, 6);
+future::internal::argument_wrapper_base _8(true, 7);
+future::internal::argument_wrapper_base _9(true, 8);
+future::internal::argument_wrapper_base _10(true, 9);
 
 }  /* namespace placeholders */
 }  /* namespace future */
