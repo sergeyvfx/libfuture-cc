@@ -75,6 +75,6 @@ class foreach_helper {
 #  error "No foreach loop implementation for this compiler"
 #endif
 
-}  /* namespace intenral */
+}  /* namespace future */
 
 #endif /* FUTURE_FOREACH_H_ */
