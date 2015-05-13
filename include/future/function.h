@@ -83,22 +83,147 @@ class function_base {
            function_bind_->is_bound();
   }
 
-  R invoke() {
-    assert_invoke();
-    argument_list_type argument_list(function_bind_->get_num_arguments());
+#define FUNCTION_INVOKE_COMMON_PRE \
+    assert_invoke(); \
+    argument_list_type argument_list(function_bind_->get_num_arguments()); \
     function_bind_->prepare(argument_list);
+
+#define FUNCTION_INVOKE_COMMON_POST \
+    check_arguments(argument_list); \
     return function_bind_->invoke(argument_list);
+
+  R invoke() {
+    FUNCTION_INVOKE_COMMON_PRE
+    FUNCTION_INVOKE_COMMON_POST
   }
 
   template<typename T1>
   R invoke(T1 arg1) {
-    assert_invoke();
-    argument_list_type argument_list(function_bind_->get_num_arguments());
-    function_bind_->prepare(argument_list);
+    FUNCTION_INVOKE_COMMON_PRE
     set_argument(argument_list, 0, arg1);
-    check_arguments(argument_list);
-    return function_bind_->invoke(argument_list);
+    FUNCTION_INVOKE_COMMON_POST
   }
+
+  template<typename T1, typename T2>
+  R invoke(T1 arg1, T2 arg2) {
+    FUNCTION_INVOKE_COMMON_PRE
+    set_argument(argument_list, 0, arg1);
+    set_argument(argument_list, 1, arg2);
+    FUNCTION_INVOKE_COMMON_POST
+  }
+
+  template<typename T1, typename T2, typename T3>
+  R invoke(T1 arg1, T2 arg2, T3 arg3) {
+    FUNCTION_INVOKE_COMMON_PRE
+    set_argument(argument_list, 0, arg1);
+    set_argument(argument_list, 1, arg2);
+    set_argument(argument_list, 2, arg3);
+    FUNCTION_INVOKE_COMMON_POST
+  }
+
+  template<typename T1, typename T2, typename T3, typename T4>
+  R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4) {
+    FUNCTION_INVOKE_COMMON_PRE
+    set_argument(argument_list, 0, arg1);
+    set_argument(argument_list, 1, arg2);
+    set_argument(argument_list, 2, arg3);
+    set_argument(argument_list, 3, arg4);
+    FUNCTION_INVOKE_COMMON_POST
+  }
+
+  template<typename T1, typename T2, typename T3, typename T4, typename T5>
+  R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) {
+    FUNCTION_INVOKE_COMMON_PRE
+    set_argument(argument_list, 0, arg1);
+    set_argument(argument_list, 1, arg2);
+    set_argument(argument_list, 2, arg3);
+    set_argument(argument_list, 3, arg4);
+    set_argument(argument_list, 4, arg5);
+    FUNCTION_INVOKE_COMMON_POST
+  }
+
+  template<typename T1, typename T2, typename T3, typename T4, typename T5,
+           typename T6>
+  R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
+           T6 arg6) {
+    FUNCTION_INVOKE_COMMON_PRE
+    set_argument(argument_list, 0, arg1);
+    set_argument(argument_list, 1, arg2);
+    set_argument(argument_list, 2, arg3);
+    set_argument(argument_list, 3, arg4);
+    set_argument(argument_list, 4, arg5);
+    set_argument(argument_list, 5, arg6);
+    FUNCTION_INVOKE_COMMON_POST
+  }
+
+  template<typename T1, typename T2, typename T3, typename T4, typename T5,
+           typename T6, typename T7>
+  R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
+           T6 arg6, T7 arg7) {
+    FUNCTION_INVOKE_COMMON_PRE
+    set_argument(argument_list, 0, arg1);
+    set_argument(argument_list, 1, arg2);
+    set_argument(argument_list, 2, arg3);
+    set_argument(argument_list, 3, arg4);
+    set_argument(argument_list, 4, arg5);
+    set_argument(argument_list, 5, arg6);
+    set_argument(argument_list, 6, arg7);
+    FUNCTION_INVOKE_COMMON_POST
+  }
+
+  template<typename T1, typename T2, typename T3, typename T4, typename T5,
+           typename T6, typename T7, typename T8>
+  R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
+           T6 arg6, T7 arg7, T8 arg8) {
+    FUNCTION_INVOKE_COMMON_PRE
+    set_argument(argument_list, 0, arg1);
+    set_argument(argument_list, 1, arg2);
+    set_argument(argument_list, 2, arg3);
+    set_argument(argument_list, 3, arg4);
+    set_argument(argument_list, 4, arg5);
+    set_argument(argument_list, 5, arg6);
+    set_argument(argument_list, 6, arg7);
+    set_argument(argument_list, 7, arg8);
+    FUNCTION_INVOKE_COMMON_POST
+  }
+
+  template<typename T1, typename T2, typename T3, typename T4, typename T5,
+           typename T6, typename T7, typename T8, typename T9>
+  R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
+           T6 arg6, T7 arg7, T8 arg8, T9 arg9) {
+    FUNCTION_INVOKE_COMMON_PRE
+    set_argument(argument_list, 0, arg1);
+    set_argument(argument_list, 1, arg2);
+    set_argument(argument_list, 2, arg3);
+    set_argument(argument_list, 3, arg4);
+    set_argument(argument_list, 4, arg5);
+    set_argument(argument_list, 5, arg6);
+    set_argument(argument_list, 6, arg7);
+    set_argument(argument_list, 7, arg8);
+    set_argument(argument_list, 8, arg9);
+    FUNCTION_INVOKE_COMMON_POST
+  }
+
+  template<typename T1, typename T2, typename T3, typename T4, typename T5,
+           typename T6, typename T7, typename T8, typename T9, typename T10>
+  R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
+           T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10) {
+    FUNCTION_INVOKE_COMMON_PRE
+    set_argument(argument_list, 0, arg1);
+    set_argument(argument_list, 1, arg2);
+    set_argument(argument_list, 2, arg3);
+    set_argument(argument_list, 3, arg4);
+    set_argument(argument_list, 4, arg5);
+    set_argument(argument_list, 5, arg6);
+    set_argument(argument_list, 6, arg7);
+    set_argument(argument_list, 7, arg8);
+    set_argument(argument_list, 8, arg9);
+    set_argument(argument_list, 9, arg10);
+    FUNCTION_INVOKE_COMMON_POST
+  }
+
+#undef FUNCTION_INVOKE_COMMON_PRE
+#undef FUNCTION_INVOKE_COMMON_POST
 
  protected:
   void assert_invoke() {
@@ -133,21 +258,57 @@ class function_base {
  * types of all placeholder arguments.
  */
 
+#define FUNCTION_GLUE(a, b) a ## b
+#define CLASS_FUNCTION_N_DECLARE(n) \
+class FUNCTION_GLUE(function, n) : public function_base<R> { \
+  typedef ::future::internal::function_bind_base<R> bind_type; \
+ public: \
+  FUNCTION_GLUE(function, n)() : function_base<R>() {} \
+  FUNCTION_GLUE(function, n)(bind_type *function_bind) : function_base<R>(function_bind) {} \
+}
+
 template<typename R>
-class function0 : public function_base<R> {
-  typedef ::future::internal::function_bind_base<R> bind_type;
- public:
-  function0() : function_base<R>() {}
-  function0(bind_type *function_bind) : function_base<R>(function_bind) {}
-};
+CLASS_FUNCTION_N_DECLARE(0);
 
 template<typename R, typename T1>
-class function1 : public function_base<R> {
-  typedef ::future::internal::function_bind_base<R> bind_type;
- public:
-  function1() : function_base<R>() {}
-  function1(bind_type *function_bind) : function_base<R>(function_bind) {}
-};
+CLASS_FUNCTION_N_DECLARE(1);
+
+template<typename R, typename T1, typename T2>
+CLASS_FUNCTION_N_DECLARE(2);
+
+template<typename R, typename T1, typename T2, typename T3>
+CLASS_FUNCTION_N_DECLARE(3);
+
+template<typename R, typename T1, typename T2, typename T3, typename T4>
+CLASS_FUNCTION_N_DECLARE(4);
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5>
+CLASS_FUNCTION_N_DECLARE(5);
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5, typename T6>
+CLASS_FUNCTION_N_DECLARE(6);
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5, typename T6, typename T7>
+CLASS_FUNCTION_N_DECLARE(7);
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5, typename T6, typename T7, typename T8>
+CLASS_FUNCTION_N_DECLARE(8);
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5, typename T6, typename T7, typename T8, typename T9>
+CLASS_FUNCTION_N_DECLARE(9);
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5, typename T6, typename T7, typename T8, typename T9,
+         typename T10>
+CLASS_FUNCTION_N_DECLARE(10);
+
+#undef CLASS_FUNCTION_N_DECLARE
+#undef FUNCTION_GLUE
 
 }  /* namespace internal */
 
@@ -155,14 +316,17 @@ class function1 : public function_base<R> {
  * making it possible to just specify desired signature only.
  */
 
+#define CLASS_FUNCTION_DECLARE_COMMON \
+  typedef function self_type; \
+  typedef ::future::internal::function_bind_base<R> bind_type; \
+ public: \
+  function() : base_type() {} \
+  function(bind_type *function_bind) : base_type(function_bind) {}
+
 template<typename R>
 class function<R(void)> : public internal::function0<R> {
   typedef internal::function0<R> base_type;
-  typedef function self_type;
-  typedef ::future::internal::function_bind_base<R> bind_type;
- public:
-  function() : base_type() {}
-  function(bind_type *function_bind) : base_type(function_bind) {}
+  CLASS_FUNCTION_DECLARE_COMMON
   R operator() () {
     return base_type::invoke();
   }
@@ -170,16 +334,129 @@ class function<R(void)> : public internal::function0<R> {
 
 template<typename R, typename T1>
 class function<R(T1)> : public internal::function1<R , T1> {
-  typedef internal::function1<R , T1> base_type;
-  typedef function self_type;
-  typedef ::future::internal::function_bind_base<R> bind_type;
- public:
-  function() : base_type() {}
-  function(bind_type *function_bind) : base_type(function_bind) {}
+  typedef internal::function1<R, T1> base_type;
+  CLASS_FUNCTION_DECLARE_COMMON
   R operator() (T1 arg1) {
     return base_type::invoke(arg1);
   }
 };
+
+template<typename R, typename T1, typename T2>
+class function<R(T1, T2)> : public internal::function2<R , T1, T2> {
+  typedef internal::function2<R, T1, T2> base_type;
+  CLASS_FUNCTION_DECLARE_COMMON
+  R operator() (T1 arg1, T2 arg2) {
+    return base_type::invoke(arg1, arg2);
+  }
+};
+
+template<typename R, typename T1, typename T2, typename T3>
+class function<R(T1, T2, T3)> : public internal::function3<R , T1, T2, T3> {
+  typedef internal::function3<R, T1, T2, T3> base_type;
+  CLASS_FUNCTION_DECLARE_COMMON
+  R operator() (T1 arg1, T2 arg2, T3 arg3) {
+    return base_type::invoke(arg1, arg2, arg3);
+  }
+};
+
+template<typename R, typename T1, typename T2, typename T3, typename T4>
+class function<R(T1, T2, T3, T4)>
+    : public internal::function4<R , T1, T2, T3, T4> {
+  typedef internal::function4<R, T1, T2, T3, T4> base_type;
+  CLASS_FUNCTION_DECLARE_COMMON
+  R operator() (T1 arg1, T2 arg2, T3 arg3, T4 arg4) {
+    return base_type::invoke(arg1, arg2, arg3, arg4);
+  }
+};
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5>
+class function<R(T1, T2, T3, T4, T5)>
+    : public internal::function5<R , T1, T2, T3, T4, T5> {
+  typedef internal::function5<R, T1, T2, T3, T4, T5> base_type;
+  CLASS_FUNCTION_DECLARE_COMMON
+  R operator() (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) {
+    return base_type::invoke(arg1, arg2, arg3, arg4, arg5);
+  }
+};
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5, typename T6>
+class function<R(T1, T2, T3, T4, T5, T6)>
+    : public internal::function6<R , T1, T2, T3, T4, T5,
+                                 T6> {
+  typedef internal::function6<R, T1, T2, T3, T4, T5,
+                              T6> base_type;
+  CLASS_FUNCTION_DECLARE_COMMON
+  R operator() (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
+                T6 arg6) {
+    return base_type::invoke(arg1, arg2, arg3, arg4, arg5,
+                             arg6);
+  }
+};
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5, typename T6, typename T7>
+class function<R(T1, T2, T3, T4, T5, T6, T7)>
+    : public internal::function7<R , T1, T2, T3, T4, T5,
+                                 T6, T7> {
+  typedef internal::function7<R, T1, T2, T3, T4, T5,
+                              T6, T7> base_type;
+  CLASS_FUNCTION_DECLARE_COMMON
+  R operator() (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
+                T6 arg6, T7 arg7) {
+    return base_type::invoke(arg1, arg2, arg3, arg4, arg5,
+                             arg6, arg7);
+  }
+};
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5, typename T6, typename T7, typename T8>
+class function<R(T1, T2, T3, T4, T5, T6, T7, T8)>
+    : public internal::function8<R , T1, T2, T3, T4, T5,
+                                 T6, T7, T8> {
+  typedef internal::function8<R, T1, T2, T3, T4, T5,
+                              T6, T7, T8> base_type;
+  CLASS_FUNCTION_DECLARE_COMMON
+  R operator() (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
+                T6 arg6, T7 arg7, T8 arg8) {
+    return base_type::invoke(arg1, arg2, arg3, arg4, arg5,
+                             arg6, arg7, arg8);
+  }
+};
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5, typename T6, typename T7, typename T8, typename T9>
+class function<R(T1, T2, T3, T4, T5, T6, T7, T8, T9)>
+    : public internal::function9<R , T1, T2, T3, T4, T5,
+                                 T6, T7, T8, T9> {
+  typedef internal::function9<R, T1, T2, T3, T4, T5,
+                              T6, T7, T8, T9> base_type;
+  CLASS_FUNCTION_DECLARE_COMMON
+  R operator() (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
+                T6 arg6, T7 arg7, T8 arg8, T9 arg9) {
+    return base_type::invoke(arg1, arg2, arg3, arg4, arg5,
+                             arg6, arg7, arg8, arg9);
+  }
+};
+
+template<typename R, typename T1, typename T2, typename T3, typename T4,
+         typename T5, typename T6, typename T7, typename T8, typename T9,
+         typename T10>
+class function<R(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)>
+    : public internal::function10<R , T1, T2, T3, T4, T5,
+                                  T6, T7, T8, T9, T10> {
+  typedef internal::function10<R, T1, T2, T3, T4, T5,
+                               T6, T7, T8, T9, T10> base_type;
+  CLASS_FUNCTION_DECLARE_COMMON
+  R operator() (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
+                T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10) {
+    return base_type::invoke(arg1, arg2, arg3, arg4, arg5,
+                             arg6, arg7, arg8, arg9, arg10);
+  }
+};
+
+#undef CLASS_FUNCTION_DECLARE_COMMON
 
 }  /* namespace function **/
 }  /* namespace future */
