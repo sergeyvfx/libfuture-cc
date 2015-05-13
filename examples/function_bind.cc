@@ -45,5 +45,10 @@ int main(int argc, char **argv) {
   f0();
   int a = f1(123);
   printf("Return value is: %d\n", a);
+  function<int(int)> f2;
+  f2 = f1;
+  f2(1233);
+  function<int(int)> f3 = f2;
+  f3(111);
   return EXIT_SUCCESS;
 }

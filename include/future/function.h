@@ -51,6 +51,8 @@ class function_bind_base {
 
   virtual bool is_bound() = 0;
 
+  virtual function_bind_base* clone() = 0;
+
  protected:
   int num_arguments_;
 };
@@ -70,9 +72,26 @@ class function_base {
   typedef future::internal::argument_list argument_list_type;
 
  public:
-  function_base() {}
+  function_base() : function_bind_(NULL) {}
 
-  function_base(bind_type *function_bind) : function_bind_(function_bind) {}
+  explicit function_base(bind_type *function_bind) : function_bind_(function_bind) {}
+
+  explicit function_base(const function_base& other) {
+    if (other.function_bind_ != NULL) {
+      function_bind_ = other.function_bind_->clone();
+    } else {
+      function_bind_ = NULL;
+    }
+  }
+
+  void operator=(function_base& other) {
+    delete function_bind_;
+    if (other.function_bind_ != NULL) {
+      function_bind_ = other.function_bind_->clone();
+    } else {
+      function_bind_ = NULL;
+    }
+  }
 
   ~function_base() {
     delete function_bind_;

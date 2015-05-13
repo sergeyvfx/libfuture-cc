@@ -102,6 +102,14 @@ class argument_list {
     resize(num_arguments);
   }
 
+  explicit argument_list(argument_list& other) : arguments_(NULL) {
+    /* TODO(sergey): De-duplicate with operator=. */
+    resize(other.num_arguments_);
+    for (int i = 0; i < num_arguments_; ++i) {
+      arguments_[i] = other.arguments_[i]->clone();
+    }
+  }
+
   ~argument_list() {
     for (int i = 0; i < num_arguments_; ++i) {
       delete arguments_[i];
@@ -129,6 +137,13 @@ class argument_list {
     assert(index < num_arguments_);
     delete arguments_[index];
     arguments_[index] = argument_wrapper.clone();
+  }
+
+  void operator= (const argument_list& other) {
+    resize(other.num_arguments_);
+    for (int i = 0; i < num_arguments_; ++i) {
+      arguments_[i] = other.arguments_[i]->clone();
+    }
   }
 
   argument_wrapper_base& operator[] (int index) {

@@ -71,10 +71,14 @@ class function_bind : public ::future::internal::function_bind_base<R> {
 
 #define FUNCTION_GLUE(a, b) a ## b
 #define FUNCTION_BIND_DECLARE_COMMON(n) \
+  typedef ::future::internal::function_bind_base<R> base_type; \
   typedef future::internal::argument_list argument_list_type; \
  public: \
   explicit FUNCTION_GLUE(function_bind, n)(FuncPointer *func) \
   : function_bind<FuncPointer, R>(func, n) {} \
+  base_type* clone() { \
+    return new FUNCTION_GLUE(function_bind, n)(*this); \
+  }
 
 template <typename FuncPointer, typename R>
 class function_bind0 : public function_bind<FuncPointer, R> {
