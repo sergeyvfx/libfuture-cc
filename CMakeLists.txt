@@ -19,3 +19,10 @@ add_executable(function_bind
                include/future/function.h
                include/future/internal.h
                include/future/placeholders.h)
+
+add_executable(foreach
+               examples/foreach.cc
+               include/future/bind.h
+               include/future/function.h
+               include/future/internal.h
+               include/future/placeholders.h)
