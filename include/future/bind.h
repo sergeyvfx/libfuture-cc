@@ -54,6 +54,10 @@ class function_bind : public ::future::internal::function_bind_base<R> {
     return func_ != NULL;
   }
 
+  void set_num_arguments(int num_arguments) {
+    argument_list_.resize(num_arguments);
+  }
+
   template <typename T>
   void add_argument(T arg) {
     argument_list_[num_set_arguments_] = wrapper_type(arg);
@@ -98,6 +102,7 @@ function_bind(R func(void)) {
   typedef R FunctionPointer(void);
   internal::function_bind0<FunctionPointer, R> *bind =
     new internal::function_bind0<FunctionPointer, R>(func);
+  bind->set_num_arguments(0);
   return bind;
 }
 
@@ -109,6 +114,7 @@ function_bind(R func(T1),
   typedef R FunctionPointer(T1);
   internal::function_bind1<FunctionPointer, R, T1> *bind =
     new internal::function_bind1<FunctionPointer, R, T1>(func);
+  bind->set_num_arguments(1);
   bind->add_argument(arg);
   return bind;
 }

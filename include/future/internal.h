@@ -109,7 +109,34 @@ class argument_wrapper {
   void *data_;
 };
 
-typedef argument_wrapper argument_list[10];
+class argument_list {
+ public:
+  argument_list() {
+    resize(0);
+  }
+
+  explicit argument_list(int num_arguments)
+    : num_arguments_(num_arguments) {
+    resize(num_arguments);
+  }
+
+  ~argument_list() {
+  }
+
+  void resize(int num_arguments) {
+    num_arguments_ = num_arguments;
+  }
+
+  argument_wrapper& operator[] (int index) {
+    assert(index >= 0);
+    assert(index < num_arguments_);
+    return arguments_[index];
+  }
+
+ protected:
+  int num_arguments_;
+  argument_wrapper arguments_[10];
+};
 
 }  /* namespace internal */
 }  /* namespace future */

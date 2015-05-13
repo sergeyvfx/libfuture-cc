@@ -85,7 +85,7 @@ class function_base {
 
   R invoke() {
     assert_invoke();
-    argument_list_type argument_list;
+    argument_list_type argument_list(function_bind_->get_num_arguments());
     function_bind_->prepare(argument_list);
     return function_bind_->invoke(argument_list);
   }
@@ -93,7 +93,7 @@ class function_base {
   template<typename T1>
   R invoke(T1 arg0) {
     assert_invoke();
-    argument_list_type argument_list;
+    argument_list_type argument_list(function_bind_->get_num_arguments());
     function_bind_->prepare(argument_list);
     set_argument(argument_list, 0, arg0);
     check_arguments(argument_list);
