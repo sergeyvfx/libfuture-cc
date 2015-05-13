@@ -26,7 +26,7 @@
 namespace future {
 namespace placeholders {
 
-future::internal::argument_wrapper _1(true, 0);
+future::internal::argument_wrapper_base _1(true, 0);
 
 }  /* namespace placeholders */
 }  /* namespace future */

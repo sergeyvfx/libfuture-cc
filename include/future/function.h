@@ -112,8 +112,8 @@ class function_base {
     int num_arguments = function_bind_->get_num_arguments();
     for (int i = 0; i < num_arguments; ++i) {
       if (argument_list[i].is_placeholder() &&
-          argument_list[i].get_position() == position) {
-        argument_list[i] = ::future::internal::argument_wrapper(value);
+          argument_list[i].get_placeholder_position() == position) {
+        argument_list.set(i, value);
         return;
       }
     }

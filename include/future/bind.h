@@ -34,7 +34,6 @@ namespace internal {
 template<typename FuncPointer, typename R>
 class function_bind : public ::future::internal::function_bind_base<R> {
   typedef ::future::internal::function_bind_base<R> base_type;
-  typedef future::internal::argument_wrapper wrapper_type;
   typedef future::internal::argument_list argument_list_type;
  public:
   function_bind() : base_type(),
@@ -46,7 +45,7 @@ class function_bind : public ::future::internal::function_bind_base<R> {
 
   void prepare(argument_list_type& argument_list) {
     for (int i = 0; i < this->num_arguments_; ++i) {
-      argument_list[i] = argument_list_[i];
+      argument_list.set(i, argument_list_[i]);
     }
   }
 
@@ -59,8 +58,8 @@ class function_bind : public ::future::internal::function_bind_base<R> {
   }
 
   template <typename T>
-  void add_argument(T arg) {
-    argument_list_[num_set_arguments_] = wrapper_type(arg);
+  void add_argument(T argument) {
+    argument_list_.set(num_set_arguments_, argument);
     ++num_set_arguments_;
   }
 

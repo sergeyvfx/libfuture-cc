@@ -26,116 +26,120 @@
 #include <cassert>
 #include <cstring>
 
-#pragma message "argument_wrapper approach will be replaced with"\
-  " more c++-style invocation soon"
-
 namespace future {
 namespace internal {
 
-class argument_wrapper {
+class argument_wrapper_base {
  public:
-  argument_wrapper() : position_(-1),
-                       data_size_(0),
-                       data_(NULL) {
-    memset(data_static_, 0, sizeof(data_static_));
-  }
+  argument_wrapper_base() : is_placeholder_(true),
+                            placeholder_position_(-1),
+                            data_size_(0),
+                            data_(NULL) {}
 
-  argument_wrapper(bool /*is_placeholder*/,
-                  int position) : position_(position),
-                                  data_size_(0),
-                                  data_(NULL) {
-    memset(data_static_, 0, sizeof(data_static_));
-  }
+  argument_wrapper_base(bool is_placeholder,
+                        int placeholder_position)
+    : is_placeholder_(is_placeholder),
+      placeholder_position_(placeholder_position),
+      data_size_(0),
+      data_(NULL) {}
 
-  template <typename T>
-  argument_wrapper(T arg) : position_(-1),
-                            data_size_(sizeof(T)) {
-    if (data_size_ > sizeof(data_static_)) {
-      data_ = new unsigned char[data_size_];
-    } else {
-      data_ = reinterpret_cast<void*>(data_static_);
-    }
-    memcpy(data_, &arg, data_size_);
-  }
-
-  ~argument_wrapper() {
-    free_data();
-  }
-
-  void operator= (const argument_wrapper& other) {
-    if (this == &other) {
-      return;
-    }
-    free_data();
-    position_ = other.position_;
-    data_size_ = other.data_size_;
-    if (other.data_ != NULL) {
-      if (other.data_ == other.data_static_) {
-        data_ = reinterpret_cast<void*>(data_static_);
-      } else {
-        data_ = new unsigned char[data_size_];
-      }
-      memcpy(data_, other.data_, data_size_);
-    } else {
-      data_ = NULL;
-    }
+  virtual ~argument_wrapper_base() {
   }
 
   template <typename T>
   T cast() {
     assert(data_ != NULL);
+    assert(data_size_ == sizeof(T));
     return *reinterpret_cast<T*>(data_);
   }
 
   bool is_placeholder() {
-    return position_ != -1;
+    return is_placeholder_;
   }
 
-  int get_position() {
-    return position_;
+  int get_placeholder_position() {
+    return placeholder_position_;
+  }
+
+  virtual argument_wrapper_base* clone() {
+    return new argument_wrapper_base(*this);
   }
 
  protected:
-  void free_data(void) {
-    if (data_ != NULL && data_ != data_static_) {
-      delete [] (unsigned char*)data_;
-      data_ = NULL;
-    }
+  bool is_placeholder_;
+  int placeholder_position_;
+  size_t data_size_;
+  void *data_;
+};
+
+template<typename T>
+class argument_wrapper : public argument_wrapper_base {
+ public:
+  argument_wrapper() : argument_wrapper_base() {}
+
+  argument_wrapper(T arg) : argument_wrapper_base(false, -1),
+                            storage_(arg) {
+    this->data_size_ = sizeof(T);
+    this->data_ = &storage_;
   }
 
-  int position_;
-  size_t data_size_;
-  unsigned char data_static_[64];
-  void *data_;
+  virtual argument_wrapper_base* clone() {
+    return new argument_wrapper<T>(*this);
+  }
+
+ protected:
+  T storage_;
 };
 
 class argument_list {
  public:
-  argument_list() {
+  argument_list() : arguments_(NULL) {
     resize(0);
   }
 
   explicit argument_list(int num_arguments)
-    : num_arguments_(num_arguments) {
+    : num_arguments_(num_arguments), arguments_(NULL) {
     resize(num_arguments);
   }
 
   ~argument_list() {
+    for (int i = 0; i < num_arguments_; ++i) {
+      delete arguments_[i];
+    }
+    delete [] arguments_;
   }
 
   void resize(int num_arguments) {
     num_arguments_ = num_arguments;
+    delete [] arguments_;
+    arguments_ = new argument_wrapper_base*[num_arguments];
+    memset(arguments_, 0, sizeof(*arguments_) * num_arguments);
   }
 
-  argument_wrapper& operator[] (int index) {
+  template <typename T>
+  void set(int index, T argument) {
     assert(index >= 0);
     assert(index < num_arguments_);
-    return arguments_[index];
+    delete arguments_[index];
+    arguments_[index] = new argument_wrapper<T>(argument);
+  }
+
+  void set(int index, argument_wrapper_base& argument_wrapper) {
+    assert(index >= 0);
+    assert(index < num_arguments_);
+    delete arguments_[index];
+    arguments_[index] = argument_wrapper.clone();
+  }
+
+  argument_wrapper_base& operator[] (int index) {
+    assert(index >= 0);
+    assert(index < num_arguments_);
+    return *arguments_[index];
   }
 
  protected:
   int num_arguments_;
-  argument_wrapper arguments_[10];
+  argument_wrapper_base **arguments_;
 };
 
 }  /* namespace internal */
