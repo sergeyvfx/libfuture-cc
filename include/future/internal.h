@@ -43,6 +43,13 @@ class argument_wrapper_base {
       data_size_(0),
       data_(NULL) {}
 
+  argument_wrapper_base(const argument_wrapper_base& other) {
+    is_placeholder_ = other.is_placeholder_;
+    placeholder_position_ = other.placeholder_position_;
+    data_size_ = other.data_size_;
+    data_ = NULL;
+  }
+
   virtual ~argument_wrapper_base() {
   }
 
@@ -81,6 +88,12 @@ class argument_wrapper : public argument_wrapper_base {
                             storage_(arg) {
     this->data_size_ = sizeof(T);
     this->data_ = &storage_;
+  }
+
+  explicit argument_wrapper(const argument_wrapper<T>& other)
+      : argument_wrapper_base(other) {
+    storage_ = other.storage_;
+    data_ = &storage_;
   }
 
   virtual argument_wrapper_base* clone() {

@@ -36,6 +36,14 @@ static int bar(int a) {
   return 321;
 }
 
+static void test_pointer(int *a) {
+  printf("%s: %d\n", __func__, *a);
+}
+
+static void invoke(future::function::function<void(void)> f) {
+  f();
+}
+
 int main(int argc, char **argv) {
   using future::function::function;
   using future::bind::function_bind;
@@ -49,5 +57,13 @@ int main(int argc, char **argv) {
   f2(1233);
   function<int(int)> f3 = f2;
   f3(111);
+  function<void(void)> p0;
+  {
+    function<void(void)> p = function_bind(test_pointer, &a);
+    p0 = p;
+    p();
+    invoke(p);
+  }
+  invoke(p0);
   return EXIT_SUCCESS;
 }
