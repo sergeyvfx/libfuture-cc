@@ -46,8 +46,8 @@ class function_bind_base {
     return num_arguments_;
   }
 
-  virtual void prepare(argument_list arguments) = 0;
-  virtual R invoke(argument_list arguments) = 0;
+  virtual void prepare(argument_list& arguments) = 0;
+  virtual R invoke(argument_list& arguments) = 0;
 
   virtual bool is_bound() = 0;
 
@@ -67,7 +67,7 @@ namespace internal {
 template<typename R>
 class function_base {
   typedef ::future::internal::function_bind_base<R> bind_type;
-  typedef future::internal::argument_list arglist_type;
+  typedef future::internal::argument_list argument_list_type;
 
  public:
   function_base() {}
@@ -85,19 +85,19 @@ class function_base {
 
   R invoke() {
     assert_invoke();
-    arglist_type list;
-    function_bind_->prepare(list);
-    return function_bind_->invoke(list);
+    argument_list_type argument_list;
+    function_bind_->prepare(argument_list);
+    return function_bind_->invoke(argument_list);
   }
 
   template<typename T1>
   R invoke(T1 arg0) {
     assert_invoke();
-    arglist_type list;
-    function_bind_->prepare(list);
-    set_argument(list, 0, arg0);
-    check_arguments(list);
-    return function_bind_->invoke(list);
+    argument_list_type argument_list;
+    function_bind_->prepare(argument_list);
+    set_argument(argument_list, 0, arg0);
+    check_arguments(argument_list);
+    return function_bind_->invoke(argument_list);
   }
 
  protected:
@@ -106,23 +106,23 @@ class function_base {
   }
 
   template <typename T>
-  void set_argument(arglist_type list,
+  void set_argument(argument_list_type& argument_list,
                     int position,
                     T& value) {
     int num_arguments = function_bind_->get_num_arguments();
     for (int i = 0; i < num_arguments; ++i) {
-      if (list[i].is_placeholder() &&
-          list[i].get_position() == position) {
-        list[i] = ::future::internal::argument_wrapper(value);
+      if (argument_list[i].is_placeholder() &&
+          argument_list[i].get_position() == position) {
+        argument_list[i] = ::future::internal::argument_wrapper(value);
         return;
       }
     }
   }
 
-  void check_arguments(arglist_type list) {
+  void check_arguments(argument_list_type& argument_list) {
     int num_arguments = function_bind_->get_num_arguments();
     for (int i = 0; i < num_arguments; ++i) {
-      assert(!list[i].is_placeholder());
+      assert(!argument_list[i].is_placeholder());
     }
   }
 

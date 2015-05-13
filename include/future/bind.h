@@ -35,7 +35,7 @@ template<typename FuncPointer, typename R>
 class function_bind : public ::future::internal::function_bind_base<R> {
   typedef ::future::internal::function_bind_base<R> base_type;
   typedef future::internal::argument_wrapper wrapper_type;
-  typedef future::internal::argument_list arglist_type;
+  typedef future::internal::argument_list argument_list_type;
  public:
   function_bind() : base_type(),
                     func_(NULL) {}
@@ -44,9 +44,9 @@ class function_bind : public ::future::internal::function_bind_base<R> {
                                      func_(func),
                                      num_set_arguments_(0) {}
 
-  void prepare(arglist_type arguments) {
+  void prepare(argument_list_type& argument_list) {
     for (int i = 0; i < this->num_arguments_; ++i) {
-      arguments[i] = this->arguments_[i];
+      argument_list[i] = argument_list_[i];
     }
   }
 
@@ -56,23 +56,23 @@ class function_bind : public ::future::internal::function_bind_base<R> {
 
   template <typename T>
   void add_argument(T arg) {
-    arguments_[num_set_arguments_] = wrapper_type(arg);
+    argument_list_[num_set_arguments_] = wrapper_type(arg);
     ++num_set_arguments_;
   }
 
  protected:
   FuncPointer *func_;
-  arglist_type arguments_;
+  argument_list_type argument_list_;
   int num_set_arguments_;
 };
 
 template <typename FuncPointer, typename R>
 class function_bind0 : public function_bind<FuncPointer, R> {
-  typedef future::internal::argument_list arglist_type;
+  typedef future::internal::argument_list argument_list_type;
  public:
   explicit function_bind0(FuncPointer *func)
   : function_bind<FuncPointer, R>(func, 0) {}
-  R invoke(arglist_type arguments) {
+  R invoke(argument_list_type& arguments) {
     return this->func_();
   }
 };
@@ -81,12 +81,12 @@ template <typename FuncPointer,
           typename R,
           typename T1>
 class function_bind1 : public function_bind<FuncPointer, R> {
-  typedef future::internal::argument_list arglist_type;
+  typedef future::internal::argument_list argument_list_type;
  public:
   explicit function_bind1(FuncPointer *func)
   : function_bind<FuncPointer, R>(func, 1) {}
-  R invoke(arglist_type arguments) {
-    return this->func_(arguments[0].cast<T1>());
+  R invoke(argument_list_type& argument_list) {
+    return this->func_(argument_list[0].cast<T1>());
   }
 };
 
