@@ -91,11 +91,11 @@ class function_base {
   }
 
   template<typename T1>
-  R invoke(T1 arg0) {
+  R invoke(T1 arg1) {
     assert_invoke();
     argument_list_type argument_list(function_bind_->get_num_arguments());
     function_bind_->prepare(argument_list);
-    set_argument(argument_list, 0, arg0);
+    set_argument(argument_list, 0, arg1);
     check_arguments(argument_list);
     return function_bind_->invoke(argument_list);
   }
@@ -168,16 +168,16 @@ class function<R(void)> : public internal::function0<R> {
   }
 };
 
-template<typename R, typename T0>
-class function<R(T0)> : public internal::function1<R , T0> {
-  typedef internal::function1<R , T0> base_type;
+template<typename R, typename T1>
+class function<R(T1)> : public internal::function1<R , T1> {
+  typedef internal::function1<R , T1> base_type;
   typedef function self_type;
   typedef ::future::internal::function_bind_base<R> bind_type;
  public:
   function() : base_type() {}
   function(bind_type *function_bind) : base_type(function_bind) {}
-  R operator() (T0 arg0) {
-    return base_type::invoke(arg0);
+  R operator() (T1 arg1) {
+    return base_type::invoke(arg1);
   }
 };
 
