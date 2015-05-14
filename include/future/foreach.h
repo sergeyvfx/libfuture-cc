@@ -27,11 +27,23 @@ namespace future {
 namespace internal {
 
 template<typename T>
+class foreach_iterator_helper {
+ public:
+  typedef typename T::iterator type;
+};
+
+template<typename T>
+class foreach_iterator_helper<T const> {
+ public:
+  typedef typename T::const_iterator type;
+};
+
+template<typename T>
 class foreach_helper {
  public:
-  typedef typename T::const_iterator iterator_type;
-  explicit foreach_helper(const T& range) : current_iterator_(range.begin()),
-                                            end_iterator_(range.end()) {}
+  typedef typename foreach_iterator_helper<T>::type iterator_type;
+  explicit foreach_helper(T& range) : current_iterator_(range.begin()),
+                                      end_iterator_(range.end()) {}
   inline bool is_done() {
     return current_iterator_ == end_iterator_;
   }

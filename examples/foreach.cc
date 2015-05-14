@@ -28,6 +28,15 @@
 
 using std::vector;
 
+void foo(const vector<int>& v) {
+  FUTURE_FOREACH(int a, v) {
+    printf("%d\n", a);
+  }
+  FUTURE_FOREACH(const int& a, v) {
+    printf("%d\n", a);
+  }
+}
+
 int main(int argc, char **argv) {
   vector<int> v;
   v.push_back(1);
@@ -36,5 +45,9 @@ int main(int argc, char **argv) {
   FUTURE_FOREACH(int a, v) {
     printf("%d\n", a);
   }
+  FUTURE_FOREACH(int& a, v) {
+    printf("%d\n", a);
+  }
+  foo(v);
   return EXIT_SUCCESS;
 }
