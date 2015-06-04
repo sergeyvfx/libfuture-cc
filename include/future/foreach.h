@@ -23,6 +23,8 @@
 #ifndef FUTURE_FOREACH_H_
 #define FUTURE_FOREACH_H_
 
+#include "future/internal.h"
+
 namespace future {
 namespace internal {
 
@@ -38,12 +40,15 @@ class foreach_iterator_helper<T const> {
   typedef typename T::const_iterator type;
 };
 
+template<typename T, bool need_copy> class foreach_helper;
+
+
 template<typename T>
-class foreach_helper {
+class foreach_helper<T, false> {
  public:
   typedef typename foreach_iterator_helper<T>::type iterator_type;
-  explicit foreach_helper(T& range) : current_iterator_(range.begin()),
-                                      end_iterator_(range.end()) {}
+  foreach_helper(T& range, bool /*unused*/) : current_iterator_(range.begin()),
+                                              end_iterator_(range.end()) {}
   inline bool is_done() {
     return current_iterator_ == end_iterator_;
   }
@@ -58,12 +63,36 @@ class foreach_helper {
   iterator_type end_iterator_;
 };
 
+template<typename T>
+class foreach_helper<T, true> {
+ public:
+  typedef typename foreach_iterator_helper<T>::type iterator_type;
+  foreach_helper(T range, bool /*unused*/) : range_(range),
+                                             current_iterator_(range.begin()),
+                                             end_iterator_(range.end()) {}
+  inline bool is_done() {
+    return current_iterator_ == end_iterator_;
+  }
+  inline void step() {
+    ++current_iterator_;
+  }
+  inline iterator_type& current_iterator() {
+    return current_iterator_;
+  }
+ protected:
+  iterator_type current_iterator_;
+  iterator_type end_iterator_;
+  T range_;
+};
+
 }  /* namespace internal */
 
 #if defined(__GNUC__) || defined(__clang__)
 #  define FUTURE_FOREACH(var, range) \
   if (bool global_stop = false) {} else \
-  for (future::internal::foreach_helper<__typeof__(range)> helper(range); \
+  for (future::internal::foreach_helper<__typeof__(range), \
+                                        !FUTURE_IS_LVALUE(range)> \
+          helper(range, false); \
        !helper.is_done() && !global_stop; \
        helper.step()) \
   if(bool stop = false) {} else \

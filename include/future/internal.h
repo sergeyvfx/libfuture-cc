@@ -170,6 +170,19 @@ class argument_list {
   argument_wrapper_base **arguments_;
 };
 
+template <typename T>
+struct nondeducible {
+  typedef T type;
+};
+
+char (&is_lvalue_helper(...))[1];
+
+template <typename T>
+char (&is_lvalue_helper(T&, typename nondeducible<const volatile T&>::type))[2];
+
+#define FUTURE_IS_LVALUE(x) \
+    (sizeof(future::internal::is_lvalue_helper((x), (x))) == 2)
+
 }  /* namespace internal */
 }  /* namespace future */
 
