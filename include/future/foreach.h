@@ -80,9 +80,9 @@ class foreach_helper<T, true> {
     return current_iterator_;
   }
  protected:
+  T range_;
   iterator_type current_iterator_;
   iterator_type end_iterator_;
-  T range_;
 };
 
 }  /* namespace internal */
