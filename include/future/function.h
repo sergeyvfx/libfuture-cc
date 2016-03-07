@@ -46,7 +46,6 @@ class function_bind_base {
     return num_arguments_;
   }
 
-  virtual void prepare(argument_list& arguments) = 0;
   virtual R invoke(argument_list& arguments) = 0;
 
   virtual bool is_bound() = 0;
@@ -106,143 +105,158 @@ class function_base {
     return is_bound();
   }
 
-#define FUNCTION_INVOKE_COMMON_PRE \
-    assert_invoke(); \
-    argument_list_type argument_list(function_bind_->get_num_arguments()); \
-    function_bind_->prepare(argument_list);
+#define FUNCTION_INVOKE_COMMON_PRE() \
+    using future::internal::argument_wrapper; \
+    using future::internal::argument_wrapper_base; \
+    assert_invoke()
 
-#define FUNCTION_INVOKE_COMMON_POST \
-    check_arguments(argument_list); \
-    return function_bind_->invoke(argument_list);
+#define FUNCTION_INVOKE_COMMON_POST(arguments, num_arguments) \
+    argument_list_type argument_list((argument_wrapper_base**)arguments, num_arguments); \
+    return function_bind_->invoke(argument_list)
 
   R invoke() {
-    FUNCTION_INVOKE_COMMON_PRE
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    FUNCTION_INVOKE_COMMON_POST(NULL, 0);
   }
 
   template<typename T1>
   R invoke(T1 arg1) {
-    FUNCTION_INVOKE_COMMON_PRE
-    set_argument(argument_list, 0, arg1);
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    argument_wrapper<T1> a1(arg1);
+    argument_wrapper_base *arguments[] = {&a1};
+    FUNCTION_INVOKE_COMMON_POST(arguments, 1);
   }
 
   template<typename T1, typename T2>
   R invoke(T1 arg1, T2 arg2) {
-    FUNCTION_INVOKE_COMMON_PRE
-    set_argument(argument_list, 0, arg1);
-    set_argument(argument_list, 1, arg2);
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    argument_wrapper<T1> a1(arg1);
+    argument_wrapper<T2> a2(arg2);
+    argument_wrapper_base *arguments[] = {&a1, &a2};
+    FUNCTION_INVOKE_COMMON_POST(&arguments, 2);
   }
 
   template<typename T1, typename T2, typename T3>
   R invoke(T1 arg1, T2 arg2, T3 arg3) {
-    FUNCTION_INVOKE_COMMON_PRE
-    set_argument(argument_list, 0, arg1);
-    set_argument(argument_list, 1, arg2);
-    set_argument(argument_list, 2, arg3);
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    argument_wrapper<T1> a1(arg1);
+    argument_wrapper<T2> a2(arg2);
+    argument_wrapper<T3> a3(arg3);
+    argument_wrapper_base *arguments[] = {&a1, &a2, &a3};
+    FUNCTION_INVOKE_COMMON_POST(&arguments, 3);
   }
 
   template<typename T1, typename T2, typename T3, typename T4>
   R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4) {
-    FUNCTION_INVOKE_COMMON_PRE
-    set_argument(argument_list, 0, arg1);
-    set_argument(argument_list, 1, arg2);
-    set_argument(argument_list, 2, arg3);
-    set_argument(argument_list, 3, arg4);
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    argument_wrapper<T1> a1(arg1);
+    argument_wrapper<T2> a2(arg2);
+    argument_wrapper<T3> a3(arg3);
+    argument_wrapper<T4> a4(arg4);
+    argument_wrapper_base *arguments[] = {&a1, &a2, &a3, &a4};
+    FUNCTION_INVOKE_COMMON_POST(&arguments, 4);
   }
 
   template<typename T1, typename T2, typename T3, typename T4, typename T5>
   R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) {
-    FUNCTION_INVOKE_COMMON_PRE
-    set_argument(argument_list, 0, arg1);
-    set_argument(argument_list, 1, arg2);
-    set_argument(argument_list, 2, arg3);
-    set_argument(argument_list, 3, arg4);
-    set_argument(argument_list, 4, arg5);
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    argument_wrapper<T1> a1(arg1);
+    argument_wrapper<T2> a2(arg2);
+    argument_wrapper<T3> a3(arg3);
+    argument_wrapper<T4> a4(arg4);
+    argument_wrapper<T5> a5(arg5);
+    argument_wrapper_base *arguments[] = {&a1, &a2, &a3, &a4, &a5};
+    FUNCTION_INVOKE_COMMON_POST(&arguments, 5);
   }
 
   template<typename T1, typename T2, typename T3, typename T4, typename T5,
            typename T6>
   R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
            T6 arg6) {
-    FUNCTION_INVOKE_COMMON_PRE
-    set_argument(argument_list, 0, arg1);
-    set_argument(argument_list, 1, arg2);
-    set_argument(argument_list, 2, arg3);
-    set_argument(argument_list, 3, arg4);
-    set_argument(argument_list, 4, arg5);
-    set_argument(argument_list, 5, arg6);
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    argument_wrapper<T1> a1(arg1);
+    argument_wrapper<T2> a2(arg2);
+    argument_wrapper<T3> a3(arg3);
+    argument_wrapper<T4> a4(arg4);
+    argument_wrapper<T5> a5(arg5);
+    argument_wrapper<T6> a6(arg6);
+    argument_wrapper_base *arguments[] = {&a1, &a2, &a3, &a4, &a5,
+                                          &a6};
+    FUNCTION_INVOKE_COMMON_POST(&arguments, 6);
   }
 
   template<typename T1, typename T2, typename T3, typename T4, typename T5,
            typename T6, typename T7>
   R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
            T6 arg6, T7 arg7) {
-    FUNCTION_INVOKE_COMMON_PRE
-    set_argument(argument_list, 0, arg1);
-    set_argument(argument_list, 1, arg2);
-    set_argument(argument_list, 2, arg3);
-    set_argument(argument_list, 3, arg4);
-    set_argument(argument_list, 4, arg5);
-    set_argument(argument_list, 5, arg6);
-    set_argument(argument_list, 6, arg7);
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    argument_wrapper<T1> a1(arg1);
+    argument_wrapper<T2> a2(arg2);
+    argument_wrapper<T3> a3(arg3);
+    argument_wrapper<T4> a4(arg4);
+    argument_wrapper<T5> a5(arg5);
+    argument_wrapper<T6> a6(arg6);
+    argument_wrapper<T7> a7(arg7);
+    argument_wrapper_base *arguments[] = {&a1, &a2, &a3, &a4, &a5,
+                                          &a6, &a7};
+    FUNCTION_INVOKE_COMMON_POST(&arguments, 7);
   }
 
   template<typename T1, typename T2, typename T3, typename T4, typename T5,
            typename T6, typename T7, typename T8>
   R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
            T6 arg6, T7 arg7, T8 arg8) {
-    FUNCTION_INVOKE_COMMON_PRE
-    set_argument(argument_list, 0, arg1);
-    set_argument(argument_list, 1, arg2);
-    set_argument(argument_list, 2, arg3);
-    set_argument(argument_list, 3, arg4);
-    set_argument(argument_list, 4, arg5);
-    set_argument(argument_list, 5, arg6);
-    set_argument(argument_list, 6, arg7);
-    set_argument(argument_list, 7, arg8);
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    argument_wrapper<T1> a1(arg1);
+    argument_wrapper<T2> a2(arg2);
+    argument_wrapper<T3> a3(arg3);
+    argument_wrapper<T4> a4(arg4);
+    argument_wrapper<T5> a5(arg5);
+    argument_wrapper<T6> a6(arg6);
+    argument_wrapper<T7> a7(arg7);
+    argument_wrapper<T8> a8(arg8);
+    argument_wrapper_base *arguments[] = {&a1, &a2, &a3, &a4, &a5,
+                                          &a6, &a7, &a8};
+    FUNCTION_INVOKE_COMMON_POST(&arguments, 8);
   }
 
   template<typename T1, typename T2, typename T3, typename T4, typename T5,
            typename T6, typename T7, typename T8, typename T9>
   R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
            T6 arg6, T7 arg7, T8 arg8, T9 arg9) {
-    FUNCTION_INVOKE_COMMON_PRE
-    set_argument(argument_list, 0, arg1);
-    set_argument(argument_list, 1, arg2);
-    set_argument(argument_list, 2, arg3);
-    set_argument(argument_list, 3, arg4);
-    set_argument(argument_list, 4, arg5);
-    set_argument(argument_list, 5, arg6);
-    set_argument(argument_list, 6, arg7);
-    set_argument(argument_list, 7, arg8);
-    set_argument(argument_list, 8, arg9);
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    argument_wrapper<T1> a1(arg1);
+    argument_wrapper<T2> a2(arg2);
+    argument_wrapper<T3> a3(arg3);
+    argument_wrapper<T4> a4(arg4);
+    argument_wrapper<T5> a5(arg5);
+    argument_wrapper<T6> a6(arg6);
+    argument_wrapper<T7> a7(arg7);
+    argument_wrapper<T8> a8(arg8);
+    argument_wrapper<T9> a9(arg9);
+    argument_wrapper_base *arguments[] = {&a1, &a2, &a3, &a4, &a5,
+                                          &a6, &a7, &a8, &a9};
+    FUNCTION_INVOKE_COMMON_POST(&arguments, 9);
   }
 
   template<typename T1, typename T2, typename T3, typename T4, typename T5,
            typename T6, typename T7, typename T8, typename T9, typename T10>
   R invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5,
            T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10) {
-    FUNCTION_INVOKE_COMMON_PRE
-    set_argument(argument_list, 0, arg1);
-    set_argument(argument_list, 1, arg2);
-    set_argument(argument_list, 2, arg3);
-    set_argument(argument_list, 3, arg4);
-    set_argument(argument_list, 4, arg5);
-    set_argument(argument_list, 5, arg6);
-    set_argument(argument_list, 6, arg7);
-    set_argument(argument_list, 7, arg8);
-    set_argument(argument_list, 8, arg9);
-    set_argument(argument_list, 9, arg10);
-    FUNCTION_INVOKE_COMMON_POST
+    FUNCTION_INVOKE_COMMON_PRE();
+    argument_wrapper<T1> a1(arg1);
+    argument_wrapper<T2> a2(arg2);
+    argument_wrapper<T3> a3(arg3);
+    argument_wrapper<T4> a4(arg4);
+    argument_wrapper<T5> a5(arg5);
+    argument_wrapper<T6> a6(arg6);
+    argument_wrapper<T7> a7(arg7);
+    argument_wrapper<T8> a8(arg8);
+    argument_wrapper<T9> a9(arg9);
+    argument_wrapper<T10> a10(arg10);
+    argument_wrapper_base *arguments[] = {&a1, &a2, &a3, &a4, &a5,
+                                          &a6, &a7, &a8, &a9, &a10};
+    FUNCTION_INVOKE_COMMON_POST(&arguments, 10);
   }
 
 #undef FUNCTION_INVOKE_COMMON_PRE
@@ -251,27 +265,6 @@ class function_base {
  protected:
   void assert_invoke() {
     assert(is_bound() == true);
-  }
-
-  template <typename T>
-  void set_argument(argument_list_type& argument_list,
-                    int position,
-                    T& value) {
-    int num_arguments = function_bind_->get_num_arguments();
-    for (int i = 0; i < num_arguments; ++i) {
-      if (argument_list[i].is_placeholder() &&
-          argument_list[i].get_placeholder_position() == position) {
-        argument_list.set(i, value);
-        return;
-      }
-    }
-  }
-
-  void check_arguments(argument_list_type& argument_list) {
-    int num_arguments = function_bind_->get_num_arguments();
-    for (int i = 0; i < num_arguments; ++i) {
-      assert(!argument_list[i].is_placeholder());
-    }
   }
 
   bind_type *function_bind_;

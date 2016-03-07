@@ -43,12 +43,6 @@ class function_bind : public ::future::internal::function_bind_base<R> {
                                      func_(func),
                                      num_set_arguments_(0) {}
 
-  void prepare(argument_list_type& argument_list) {
-    for (int i = 0; i < this->num_arguments_; ++i) {
-      argument_list.set(i, argument_list_[i]);
-    }
-  }
-
   bool is_bound() {
     return func_ != NULL;
   }
@@ -64,6 +58,17 @@ class function_bind : public ::future::internal::function_bind_base<R> {
   }
 
  protected:
+  typedef future::internal::argument_wrapper_base argument_wrapper_base;
+  argument_wrapper_base *get_(argument_list_type& argument_list,
+                              int index)
+  {
+    argument_wrapper_base *arg = &argument_list_[index];
+    if (arg->is_placeholder()) {
+      return &argument_list[arg->get_placeholder_position()];
+    }
+    return arg;
+  }
+
   FuncPointer *func_;
   argument_list_type argument_list_;
   int num_set_arguments_;
@@ -73,6 +78,7 @@ class function_bind : public ::future::internal::function_bind_base<R> {
 #define FUNCTION_BIND_DECLARE_COMMON(n) \
   typedef ::future::internal::function_bind_base<R> base_type; \
   typedef future::internal::argument_list argument_list_type; \
+  typedef future::internal::argument_wrapper_base argument_wrapper_base; \
  public: \
   explicit FUNCTION_GLUE(function_bind, n)(FuncPointer *func) \
   : function_bind<FuncPointer, R>(func, n) {} \
@@ -94,7 +100,8 @@ template <typename FuncPointer,
 class function_bind1 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(1)
   R invoke(argument_list_type& argument_list) {
-    return this->func_(argument_list[0].cast<T1>());
+    argument_wrapper_base *a1 = this->get_(argument_list, 0);
+    return this->func_(a1->cast<T1>());
   }
 };
 
@@ -103,9 +110,12 @@ template <typename FuncPointer,
           typename T1, typename T2>
 class function_bind2 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(2)
+
   R invoke(argument_list_type& argument_list) {
-    return this->func_(argument_list[0].cast<T1>(),
-                       argument_list[1].cast<T2>());
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a2 = this->get_(argument_list, 1);
+    return this->func_(a1->cast<T1>(),
+                       a2->cast<T2>());
   }
 };
 
@@ -115,9 +125,12 @@ template <typename FuncPointer,
 class function_bind3 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(3)
   R invoke(argument_list_type& argument_list) {
-    return this->func_(argument_list[0].cast<T1>(),
-                       argument_list[1].cast<T2>(),
-                       argument_list[2].cast<T3>());
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a2 = this->get_(argument_list, 1),
+                          *a3 = this->get_(argument_list, 2);
+    return this->func_(a1->cast<T1>(),
+                       a2->cast<T2>(),
+                       a3->cast<T3>());
   }
 };
 
@@ -127,10 +140,14 @@ template <typename FuncPointer,
 class function_bind4 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(4)
   R invoke(argument_list_type& argument_list) {
-    return this->func_(argument_list[0].cast<T1>(),
-                       argument_list[1].cast<T2>(),
-                       argument_list[2].cast<T3>(),
-                       argument_list[3].cast<T4>());
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a2 = this->get_(argument_list, 1),
+                          *a3 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3);
+    return this->func_(a1->cast<T1>(),
+                       a2->cast<T2>(),
+                       a3->cast<T3>(),
+                       a4->cast<T4>());
   }
 };
 
@@ -140,11 +157,16 @@ template <typename FuncPointer,
 class function_bind5 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(5)
   R invoke(argument_list_type& argument_list) {
-    return this->func_(argument_list[0].cast<T1>(),
-                       argument_list[1].cast<T2>(),
-                       argument_list[2].cast<T3>(),
-                       argument_list[3].cast<T4>(),
-                       argument_list[4].cast<T5>());
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a2 = this->get_(argument_list, 1),
+                          *a3 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4);
+    return this->func_(a1->cast<T1>(),
+                       a2->cast<T2>(),
+                       a3->cast<T3>(),
+                       a4->cast<T4>(),
+                       a5->cast<T5>());
   }
 };
 
@@ -155,12 +177,18 @@ template <typename FuncPointer,
 class function_bind6 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(6)
   R invoke(argument_list_type& argument_list) {
-    return this->func_(argument_list[0].cast<T1>(),
-                       argument_list[1].cast<T2>(),
-                       argument_list[2].cast<T3>(),
-                       argument_list[3].cast<T4>(),
-                       argument_list[4].cast<T5>(),
-                       argument_list[5].cast<T6>());
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a2 = this->get_(argument_list, 1),
+                          *a3 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4),
+                          *a6 = this->get_(argument_list, 5);
+    return this->func_(a1->cast<T1>(),
+                       a2->cast<T2>(),
+                       a3->cast<T3>(),
+                       a4->cast<T4>(),
+                       a5->cast<T5>(),
+                       a6->cast<T6>());
   }
 };
 
@@ -171,13 +199,20 @@ template <typename FuncPointer,
 class function_bind7 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(7)
   R invoke(argument_list_type& argument_list) {
-    return this->func_(argument_list[0].cast<T1>(),
-                       argument_list[1].cast<T2>(),
-                       argument_list[2].cast<T3>(),
-                       argument_list[3].cast<T4>(),
-                       argument_list[4].cast<T5>(),
-                       argument_list[5].cast<T6>(),
-                       argument_list[6].cast<T7>());
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a2 = this->get_(argument_list, 1),
+                          *a3 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4),
+                          *a6 = this->get_(argument_list, 5),
+                          *a7 = this->get_(argument_list, 6);
+    return this->func_(a1->cast<T1>(),
+                       a2->cast<T2>(),
+                       a3->cast<T3>(),
+                       a4->cast<T4>(),
+                       a5->cast<T5>(),
+                       a6->cast<T6>(),
+                       a7->cast<T7>());
   }
 };
 
@@ -188,14 +223,22 @@ template <typename FuncPointer,
 class function_bind8 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(8)
   R invoke(argument_list_type& argument_list) {
-    return this->func_(argument_list[0].cast<T1>(),
-                       argument_list[1].cast<T2>(),
-                       argument_list[2].cast<T3>(),
-                       argument_list[3].cast<T4>(),
-                       argument_list[4].cast<T5>(),
-                       argument_list[5].cast<T6>(),
-                       argument_list[6].cast<T7>(),
-                       argument_list[7].cast<T8>());
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a2 = this->get_(argument_list, 1),
+                          *a3 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4),
+                          *a6 = this->get_(argument_list, 5),
+                          *a7 = this->get_(argument_list, 6),
+                          *a8 = this->get_(argument_list, 7);
+    return this->func_(a1->cast<T1>(),
+                       a2->cast<T2>(),
+                       a3->cast<T3>(),
+                       a4->cast<T4>(),
+                       a5->cast<T5>(),
+                       a6->cast<T6>(),
+                       a7->cast<T7>(),
+                       a8->cast<T8>());
   }
 };
 
@@ -206,15 +249,24 @@ template <typename FuncPointer,
 class function_bind9 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(9)
   R invoke(argument_list_type& argument_list) {
-    return this->func_(argument_list[0].cast<T1>(),
-                       argument_list[1].cast<T2>(),
-                       argument_list[2].cast<T3>(),
-                       argument_list[3].cast<T4>(),
-                       argument_list[4].cast<T5>(),
-                       argument_list[5].cast<T6>(),
-                       argument_list[6].cast<T7>(),
-                       argument_list[7].cast<T8>(),
-                       argument_list[8].cast<T9>());
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a2 = this->get_(argument_list, 1),
+                          *a3 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4),
+                          *a6 = this->get_(argument_list, 5),
+                          *a7 = this->get_(argument_list, 6),
+                          *a8 = this->get_(argument_list, 7),
+                          *a9 = this->get_(argument_list, 8);
+    return this->func_(a1->cast<T1>(),
+                       a2->cast<T2>(),
+                       a3->cast<T3>(),
+                       a4->cast<T4>(),
+                       a5->cast<T5>(),
+                       a6->cast<T6>(),
+                       a7->cast<T7>(),
+                       a8->cast<T8>(),
+                       a9->cast<T9>());
   }
 };
 
@@ -225,16 +277,26 @@ template <typename FuncPointer,
 class function_bind10 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(10)
   R invoke(argument_list_type& argument_list) {
-    return this->func_(argument_list[0].cast<T1>(),
-                       argument_list[1].cast<T2>(),
-                       argument_list[2].cast<T3>(),
-                       argument_list[3].cast<T4>(),
-                       argument_list[4].cast<T5>(),
-                       argument_list[5].cast<T6>(),
-                       argument_list[6].cast<T7>(),
-                       argument_list[7].cast<T8>(),
-                       argument_list[8].cast<T9>(),
-                       argument_list[9].cast<T10>());
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a2 = this->get_(argument_list, 1),
+                          *a3 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4),
+                          *a6 = this->get_(argument_list, 5),
+                          *a7 = this->get_(argument_list, 6),
+                          *a8 = this->get_(argument_list, 7),
+                          *a9 = this->get_(argument_list, 8),
+                          *a10 = this->get_(argument_list, 9);
+    return this->func_(a1->cast<T1>(),
+                       a2->cast<T2>(),
+                       a3->cast<T3>(),
+                       a4->cast<T4>(),
+                       a5->cast<T5>(),
+                       a6->cast<T6>(),
+                       a7->cast<T7>(),
+                       a8->cast<T8>(),
+                       a9->cast<T9>(),
+                       a10->cast<T10>());
   }
 };
 

@@ -106,16 +106,24 @@ class argument_wrapper : public argument_wrapper_base {
 
 class argument_list {
  public:
-  argument_list() : arguments_(NULL) {
+  argument_list()
+      : arguments_(NULL),
+        num_arguments_(0),
+        need_free_(true) {
     resize(0);
   }
 
   explicit argument_list(int num_arguments)
-    : num_arguments_(num_arguments), arguments_(NULL) {
+      : num_arguments_(num_arguments),
+        arguments_(NULL),
+        need_free_(true) {
     resize(num_arguments);
   }
 
-  explicit argument_list(argument_list& other) : arguments_(NULL) {
+  explicit argument_list(argument_list& other)
+      : arguments_(NULL),
+        need_free_(true),
+        num_arguments_(0) {
     /* TODO(sergey): De-duplicate with operator=. */
     resize(other.num_arguments_);
     for (int i = 0; i < num_arguments_; ++i) {
@@ -123,24 +131,32 @@ class argument_list {
     }
   }
 
+  argument_list(argument_wrapper_base **arguments,
+                int num_arguments)
+      : num_arguments_(num_arguments),
+        arguments_(arguments),
+        need_free_(false) {
+  }
+
   ~argument_list() {
-    for (int i = 0; i < num_arguments_; ++i) {
-      delete arguments_[i];
-    }
-    delete [] arguments_;
+    clear();
   }
 
   void resize(int num_arguments) {
+    clear();
     num_arguments_ = num_arguments;
-    delete [] arguments_;
-    arguments_ = new argument_wrapper_base*[num_arguments];
-    memset(arguments_, 0, sizeof(*arguments_) * num_arguments);
+    need_free_ = true;
+    if (num_arguments != 0) {
+      arguments_ = new argument_wrapper_base*[num_arguments];
+      memset(arguments_, 0, sizeof(*arguments_) * num_arguments);
+    }
   }
 
   template <typename T>
   void set(int index, T argument) {
     assert(index >= 0);
     assert(index < num_arguments_);
+    assert(need_free_);
     delete arguments_[index];
     arguments_[index] = new argument_wrapper<T>(argument);
   }
@@ -148,6 +164,7 @@ class argument_list {
   void set(int index, argument_wrapper_base& argument_wrapper) {
     assert(index >= 0);
     assert(index < num_arguments_);
+    assert(need_free_);
     delete arguments_[index];
     arguments_[index] = argument_wrapper.clone();
   }
@@ -166,8 +183,20 @@ class argument_list {
   }
 
  protected:
+  void clear() {
+    if (need_free_ && arguments_) {
+      for (int i = 0; i < num_arguments_; ++i) {
+        delete arguments_[i];
+      }
+      delete [] arguments_;
+    }
+    num_arguments_ = 0;
+    arguments_ = NULL;
+  }
+
   int num_arguments_;
   argument_wrapper_base **arguments_;
+  bool need_free_;
 };
 
 template <typename T>
