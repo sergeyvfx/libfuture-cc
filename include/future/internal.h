@@ -54,17 +54,17 @@ class argument_wrapper_base {
   }
 
   template <typename T>
-  T cast() {
+  inline T cast() {
     assert(data_ != NULL);
     assert(data_size_ == sizeof(T));
     return *reinterpret_cast<T*>(data_);
   }
 
-  bool is_placeholder() {
+  inline bool is_placeholder() {
     return is_placeholder_;
   }
 
-  int get_placeholder_position() {
+  inline int get_placeholder_position() {
     return placeholder_position_;
   }
 
@@ -176,10 +176,10 @@ class argument_list {
     }
   }
 
-  argument_wrapper_base& operator[] (int index) {
+  argument_wrapper_base* operator[] (int index) {
     assert(index >= 0);
     assert(index < num_arguments_);
-    return *arguments_[index];
+    return arguments_[index];
   }
 
  protected:

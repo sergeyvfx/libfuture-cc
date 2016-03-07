@@ -43,16 +43,16 @@ class function_bind : public ::future::internal::function_bind_base<R> {
                                      func_(func),
                                      num_set_arguments_(0) {}
 
-  bool is_bound() {
+  inline bool is_bound() {
     return func_ != NULL;
   }
 
-  void set_num_arguments(int num_arguments) {
+  inline void set_num_arguments(int num_arguments) {
     argument_list_.resize(num_arguments);
   }
 
   template <typename T>
-  void add_argument(T argument) {
+  inline void add_argument(T argument) {
     argument_list_.set(num_set_arguments_, argument);
     ++num_set_arguments_;
   }
@@ -62,9 +62,9 @@ class function_bind : public ::future::internal::function_bind_base<R> {
   argument_wrapper_base *get_(argument_list_type& argument_list,
                               int index)
   {
-    argument_wrapper_base *arg = &argument_list_[index];
+    argument_wrapper_base *arg = argument_list_[index];
     if (arg->is_placeholder()) {
-      return &argument_list[arg->get_placeholder_position()];
+      return argument_list[arg->get_placeholder_position()];
     }
     return arg;
   }
