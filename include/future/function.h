@@ -428,7 +428,7 @@ CLASS_FUNCTION_N_DECLARE(10);
   function() : base_type() {} \
   function(bind_type *function_bind) : base_type(function_bind) {} \
   template <typename FuncPointer> function(FuncPointer foo) \
-  : function(::future::bind::function_bind(foo)) { \
+  : base_type(::future::bind::function_bind(foo)) { \
   }
 
 template<typename R>

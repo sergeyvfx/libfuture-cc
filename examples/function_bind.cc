@@ -61,6 +61,7 @@ static void invoke(future::function::function<void(void)> f) {
 int main(int argc, char **argv) {
   using future::function::function;
   using future::bind::function_bind;
+  using future::placeholders::_1;
   function<void(void)> f0 = function_bind(foo);
   function<int(int)> f1 = function_bind(bar, _1);
   f0();
