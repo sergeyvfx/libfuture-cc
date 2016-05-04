@@ -26,18 +26,18 @@
 namespace future {
 namespace placeholders {
 
-#define _1 future::internal::argument_wrapper_base(true, 0)
-#define _2 future::internal::argument_wrapper_base(true, 1)
-#define _3 future::internal::argument_wrapper_base(true, 2)
-#define _4 future::internal::argument_wrapper_base(true, 3)
-#define _5 future::internal::argument_wrapper_base(true, 4)
-#define _6 future::internal::argument_wrapper_base(true, 5)
-#define _7 future::internal::argument_wrapper_base(true, 6)
-#define _8 future::internal::argument_wrapper_base(true, 7)
-#define _9 future::internal::argument_wrapper_base(true, 8)
-#define _10 future::internal::argument_wrapper_base(true, 9)
+#define _1 ::future::internal::argument_wrapper_base(true, 0)
+#define _2 ::future::internal::argument_wrapper_base(true, 1)
+#define _3 ::future::internal::argument_wrapper_base(true, 2)
+#define _4 ::future::internal::argument_wrapper_base(true, 3)
+#define _5 ::future::internal::argument_wrapper_base(true, 4)
+#define _6 ::future::internal::argument_wrapper_base(true, 5)
+#define _7 ::future::internal::argument_wrapper_base(true, 6)
+#define _8 ::future::internal::argument_wrapper_base(true, 7)
+#define _9 ::future::internal::argument_wrapper_base(true, 8)
+#define _10 ::future::internal::argument_wrapper_base(true, 9)
 
-}  /* namespace placeholders */
+}  /*  namespace placeholders */
 }  /* namespace future */
 
 #endif  /* FUTURE_PLACEHOLDERS_H_ */

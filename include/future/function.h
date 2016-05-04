@@ -58,6 +58,95 @@ class function_bind_base {
 
 }  /* namespace internal */
 
+namespace bind {
+
+template <typename R>
+::future::internal::function_bind_base<R>*
+function_bind(R func(void));
+
+template <typename R, typename T1,
+                      typename A1>
+::future::internal::function_bind_base<R>*
+function_bind(R func(T1),
+              A1 arg1);
+
+template <typename R, typename T1, typename T2,
+                      typename A1, typename A2>
+::future::internal::function_bind_base<R>*
+function_bind(R func(T1, T2),
+              A1 arg1, A2 arg2);
+
+template <typename R, typename T1, typename T2, typename T3,
+                      typename A1, typename A2, typename A3>
+::future::internal::function_bind_base<R>*
+function_bind(R func(T1, T2, T3),
+              A1 arg1, A2 arg2, A3 arg3);
+
+template <typename R, typename T1, typename T2, typename T3, typename T4,
+                      typename A1, typename A2, typename A3, typename A4>
+::future::internal::function_bind_base<R>*
+function_bind(R func(T1, T2, T3, T4),
+              A1 arg1, A2 arg2, A3 arg3, A4 arg4);
+
+template <typename R, typename T1, typename T2, typename T3, typename T4,
+                      typename T5,
+                      typename A1, typename A2, typename A3, typename A4,
+                      typename A5>
+::future::internal::function_bind_base<R>*
+function_bind(R func(T1, T2, T3, T4, T5),
+              A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5);
+
+template <typename R, typename T1, typename T2, typename T3, typename T4,
+                      typename T5, typename T6,
+                      typename A1, typename A2, typename A3, typename A4,
+                      typename A5, typename A6>
+::future::internal::function_bind_base<R>*
+function_bind(R func(T1, T2, T3, T4, T5, T6),
+              A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
+              A6 arg6);
+
+template <typename R, typename T1, typename T2, typename T3, typename T4,
+                      typename T5, typename T6, typename T7,
+                      typename A1, typename A2, typename A3, typename A4,
+                      typename A5, typename A6, typename A7>
+::future::internal::function_bind_base<R>*
+function_bind(R func(T1, T2, T3, T4, T5, T6, T7),
+              A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
+              A6 arg6, A7 arg7);
+
+template <typename R, typename T1, typename T2, typename T3, typename T4,
+                      typename T5, typename T6, typename T7, typename T8,
+                      typename A1, typename A2, typename A3, typename A4,
+                      typename A5, typename A6, typename A7, typename A8>
+::future::internal::function_bind_base<R>*
+function_bind(R func(T1, T2, T3, T4, T5, T6, T7, T8),
+              A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
+              A6 arg6, A7 arg7, A8 arg8);
+
+template <typename R, typename T1, typename T2, typename T3, typename T4,
+                      typename T5, typename T6, typename T7, typename T8,
+                      typename T9,
+                      typename A1, typename A2, typename A3, typename A4,
+                      typename A5, typename A6, typename A7, typename A8,
+                      typename A9>
+::future::internal::function_bind_base<R>*
+function_bind(R func(T1, T2, T3, T4, T5, T6, T7, T8, T9),
+              A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
+              A6 arg6, A7 arg7, A8 arg8, A9 arg9);
+
+template <typename R, typename T1, typename T2, typename T3, typename T4,
+                      typename T5, typename T6, typename T7, typename T8,
+                      typename T9, typename T10,
+                      typename A1, typename A2, typename A3, typename A4,
+                      typename A5, typename A6, typename A7, typename A8,
+                      typename A9, typename A10>
+::future::internal::function_bind_base<R>*
+function_bind(R func(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10),
+              A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
+              A6 arg6, A7 arg7, A8 arg8, A9 arg9, A10 arg10);
+
+}  /* namespace bind */
+
 namespace function {
 
 template<typename Signature> class function;
@@ -83,7 +172,7 @@ class function_base {
     }
   }
 
-  void operator=(function_base& other) {
+  void operator=(const function_base& other) {
     delete function_bind_;
     if (other.function_bind_ != NULL) {
       function_bind_ = other.function_bind_->clone();
@@ -337,7 +426,10 @@ CLASS_FUNCTION_N_DECLARE(10);
   typedef ::future::internal::function_bind_base<R> bind_type; \
  public: \
   function() : base_type() {} \
-  function(bind_type *function_bind) : base_type(function_bind) {}
+  function(bind_type *function_bind) : base_type(function_bind) {} \
+  template <typename FuncPointer> function(FuncPointer foo) \
+  : function(::future::bind::function_bind(foo)) { \
+  }
 
 template<typename R>
 class function<R(void)> : public internal::function0<R> {

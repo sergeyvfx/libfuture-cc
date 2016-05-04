@@ -210,7 +210,7 @@ template <typename T>
 char (&is_lvalue_helper(T&, typename nondeducible<const volatile T&>::type))[2];
 
 #define FUTURE_IS_LVALUE(x) \
-    (sizeof(future::internal::is_lvalue_helper((x), (x))) == 2)
+    (sizeof(::future::internal::is_lvalue_helper((x), (x))) == 2)
 
 }  /* namespace internal */
 }  /* namespace future */
