@@ -38,7 +38,7 @@ class function_bind : public ::future::internal::function_bind_base<R> {
  public:
   function_bind() : base_type(),
                     func_(NULL) {}
-  function_bind(FuncPointer *func,
+  function_bind(FuncPointer func,
                 int num_arguments) : base_type(num_arguments),
                                      func_(func),
                                      num_set_arguments_(0) {}
@@ -60,8 +60,7 @@ class function_bind : public ::future::internal::function_bind_base<R> {
  protected:
   typedef future::internal::argument_wrapper_base argument_wrapper_base;
   argument_wrapper_base *get_(argument_list_type& argument_list,
-                              int index)
-  {
+                              int index) {
     argument_wrapper_base *arg = argument_list_[index];
     if (arg->is_placeholder()) {
       return argument_list[arg->get_placeholder_position()];
@@ -69,7 +68,7 @@ class function_bind : public ::future::internal::function_bind_base<R> {
     return arg;
   }
 
-  FuncPointer *func_;
+  FuncPointer func_;
   argument_list_type argument_list_;
   int num_set_arguments_;
 };
@@ -80,16 +79,18 @@ class function_bind : public ::future::internal::function_bind_base<R> {
   typedef future::internal::argument_list argument_list_type; \
   typedef future::internal::argument_wrapper_base argument_wrapper_base; \
  public: \
-  explicit FUNCTION_GLUE(function_bind, n)(FuncPointer *func) \
+  explicit FUNCTION_GLUE(function_bind, n)(FuncPointer func) \
   : function_bind<FuncPointer, R>(func, n) {} \
   base_type* clone() { \
     return new FUNCTION_GLUE(function_bind, n)(*this); \
   }
 
+/* Regular function binds */
+
 template <typename FuncPointer, typename R>
 class function_bind0 : public function_bind<FuncPointer, R> {
   FUNCTION_BIND_DECLARE_COMMON(0)
-  R invoke(argument_list_type& arguments) {
+  R invoke(argument_list_type& argument_list) {
     return this->func_();
   }
 };
@@ -300,15 +301,236 @@ class function_bind10 : public function_bind<FuncPointer, R> {
   }
 };
 
+/* Class method binds */
+
+#define CLASS_METHOD_BIND_DECLARE_COMMON(n) \
+  typedef ::future::internal::function_bind_base<R> base_type; \
+  typedef future::internal::argument_list argument_list_type; \
+  typedef future::internal::argument_wrapper_base argument_wrapper_base; \
+  C *object_; \
+ public: \
+  explicit FUNCTION_GLUE(class_method_bind, n)(FuncPointer func, \
+                                               C *object) \
+  : function_bind<FuncPointer, R>(func, n), \
+    object_(object) {} \
+  base_type* clone() { \
+    return new FUNCTION_GLUE(class_method_bind, n)(*this); \
+  }
+
+template <typename FuncPointer, class C, typename R>
+class class_method_bind0 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(0)
+  R invoke(argument_list_type& argument_list) {
+    return (object_->*(this->func_))();
+  }
+};
+
+template <typename FuncPointer, class C, typename R,
+          typename T1>
+class class_method_bind1 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(1)
+  R invoke(argument_list_type& argument_list) {
+    argument_wrapper_base *a1 = this->get_(argument_list, 0);
+    return (object_->*(this->func_))(a1->cast<T1>());
+  }
+};
+
+template <typename FuncPointer, class C, typename R,
+          typename T1, typename T2>
+class class_method_bind2 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(2)
+  R invoke(argument_list_type& argument_list) {
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a2 = this->get_(argument_list, 1);
+    return (object_->*(this->func_))(a1->cast<T1>(),
+                                     a2->cast<T2>());
+  }
+};
+
+template <typename FuncPointer, class C, typename R,
+          typename T1, typename T2, typename T3>
+class class_method_bind3 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(3)
+  R invoke(argument_list_type& argument_list) {
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a3 = this->get_(argument_list, 1),
+                          *a2 = this->get_(argument_list, 2);
+    return (object_->*(this->func_))(a1->cast<T1>(),
+                                     a2->cast<T2>(),
+                                     a3->cast<T3>());
+  }
+};
+
+template <typename FuncPointer, class C, typename R,
+          typename T1, typename T2, typename T3, typename T4>
+class class_method_bind4 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(4)
+  R invoke(argument_list_type& argument_list) {
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a3 = this->get_(argument_list, 1),
+                          *a2 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3);
+    return (object_->*(this->func_))(a1->cast<T1>(),
+                                     a2->cast<T2>(),
+                                     a3->cast<T3>(),
+                                     a4->cast<T4>());
+  }
+};
+
+template <typename FuncPointer, class C, typename R,
+          typename T1, typename T2, typename T3, typename T4, typename T5>
+class class_method_bind5 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(5)
+  R invoke(argument_list_type& argument_list) {
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a3 = this->get_(argument_list, 1),
+                          *a2 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4);
+    return (object_->*(this->func_))(a1->cast<T1>(),
+                                     a2->cast<T2>(),
+                                     a3->cast<T3>(),
+                                     a4->cast<T4>(),
+                                     a5->cast<T5>());
+  }
+};
+
+template <typename FuncPointer, class C, typename R,
+          typename T1, typename T2, typename T3, typename T4, typename T5,
+          typename T6>
+class class_method_bind6 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(6)
+  R invoke(argument_list_type& argument_list) {
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a3 = this->get_(argument_list, 1),
+                          *a2 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4),
+                          *a6 = this->get_(argument_list, 5);
+    return (object_->*(this->func_))(a1->cast<T1>(),
+                                     a2->cast<T2>(),
+                                     a3->cast<T3>(),
+                                     a4->cast<T4>(),
+                                     a5->cast<T5>(),
+                                     a6->cast<T6>());
+  }
+};
+
+template <typename FuncPointer, class C, typename R,
+          typename T1, typename T2, typename T3, typename T4, typename T5,
+          typename T6, typename T7>
+class class_method_bind7 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(7)
+  R invoke(argument_list_type& argument_list) {
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a3 = this->get_(argument_list, 1),
+                          *a2 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4),
+                          *a6 = this->get_(argument_list, 5),
+                          *a7 = this->get_(argument_list, 6);
+    return (object_->*(this->func_))(a1->cast<T1>(),
+                                     a2->cast<T2>(),
+                                     a3->cast<T3>(),
+                                     a4->cast<T4>(),
+                                     a5->cast<T5>(),
+                                     a6->cast<T6>(),
+                                     a7->cast<T7>());
+  }
+};
+
+template <typename FuncPointer, class C, typename R,
+          typename T1, typename T2, typename T3, typename T4, typename T5,
+          typename T6, typename T7, typename T8>
+class class_method_bind8 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(8)
+  R invoke(argument_list_type& argument_list) {
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a3 = this->get_(argument_list, 1),
+                          *a2 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4),
+                          *a6 = this->get_(argument_list, 5),
+                          *a7 = this->get_(argument_list, 6),
+                          *a8 = this->get_(argument_list, 7);
+    return (object_->*(this->func_))(a1->cast<T1>(),
+                                     a2->cast<T2>(),
+                                     a3->cast<T3>(),
+                                     a4->cast<T4>(),
+                                     a5->cast<T5>(),
+                                     a6->cast<T6>(),
+                                     a7->cast<T7>(),
+                                     a8->cast<T8>());
+  }
+};
+
+template <typename FuncPointer, class C, typename R,
+          typename T1, typename T2, typename T3, typename T4, typename T5,
+          typename T6, typename T7, typename T8, typename T9>
+class class_method_bind9 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(9)
+  R invoke(argument_list_type& argument_list) {
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a3 = this->get_(argument_list, 1),
+                          *a2 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4),
+                          *a6 = this->get_(argument_list, 5),
+                          *a7 = this->get_(argument_list, 6),
+                          *a8 = this->get_(argument_list, 7),
+                          *a9 = this->get_(argument_list, 8);
+    return (object_->*(this->func_))(a1->cast<T1>(),
+                                     a2->cast<T2>(),
+                                     a3->cast<T3>(),
+                                     a4->cast<T4>(),
+                                     a5->cast<T5>(),
+                                     a6->cast<T6>(),
+                                     a7->cast<T7>(),
+                                     a8->cast<T8>(),
+                                     a9->cast<T9>());
+  }
+};
+
+template <typename FuncPointer, class C, typename R,
+          typename T1, typename T2, typename T3, typename T4, typename T5,
+          typename T6, typename T7, typename T8, typename T9, typename T10>
+class class_method_bind10 : public function_bind<FuncPointer, R> {
+  CLASS_METHOD_BIND_DECLARE_COMMON(10)
+  R invoke(argument_list_type& argument_list) {
+    argument_wrapper_base *a1 = this->get_(argument_list, 0),
+                          *a3 = this->get_(argument_list, 1),
+                          *a2 = this->get_(argument_list, 2),
+                          *a4 = this->get_(argument_list, 3),
+                          *a5 = this->get_(argument_list, 4),
+                          *a6 = this->get_(argument_list, 5),
+                          *a7 = this->get_(argument_list, 6),
+                          *a8 = this->get_(argument_list, 7),
+                          *a9 = this->get_(argument_list, 8),
+                          *a10 = this->get_(argument_list, 9);
+    return (object_->*(this->func_))(a1->cast<T1>(),
+                                     a2->cast<T2>(),
+                                     a3->cast<T3>(),
+                                     a4->cast<T4>(),
+                                     a5->cast<T5>(),
+                                     a6->cast<T6>(),
+                                     a7->cast<T7>(),
+                                     a8->cast<T8>(),
+                                     a9->cast<T9>(),
+                                     a10->cast<T10>());
+  }
+};
+
 #undef FUNCTION_BIND_DECLARE_COMMON
 #undef FUNCTION_GLUE
 
 }  /* namespace internal */
 
+/* Regular function binds */
+
 template <typename R>
 ::future::internal::function_bind_base<R>*
 function_bind(R func(void)) {
-  typedef R FunctionPointer(void);
+  typedef R (*FunctionPointer)(void);
   typedef internal::function_bind0<FunctionPointer, R> function_bind_type;
   function_bind_type *bind = new function_bind_type(func);
   bind->set_num_arguments(0);
@@ -320,7 +542,7 @@ template <typename R, typename T1,
 ::future::internal::function_bind_base<R>*
 function_bind(R func(T1),
               A1 arg1) {
-  typedef R FunctionPointer(T1);
+  typedef R (*FunctionPointer)(T1);
   typedef internal::function_bind1<FunctionPointer, R,
                                    T1> function_bind_type;
   function_bind_type *bind = new function_bind_type(func);
@@ -334,7 +556,7 @@ template <typename R, typename T1, typename T2,
 ::future::internal::function_bind_base<R>*
 function_bind(R func(T1, T2),
               A1 arg1, A2 arg2) {
-  typedef R FunctionPointer(T1, T2);
+  typedef R (*FunctionPointer)(T1, T2);
   typedef internal::function_bind2<FunctionPointer, R,
                                    T1, T2> function_bind_type;
   function_bind_type *bind = new function_bind_type(func);
@@ -349,7 +571,7 @@ template <typename R, typename T1, typename T2, typename T3,
 ::future::internal::function_bind_base<R>*
 function_bind(R func(T1, T2, T3),
               A1 arg1, A2 arg2, A3 arg3) {
-  typedef R FunctionPointer(T1, T2, T3);
+  typedef R (*FunctionPointer)(T1, T2, T3);
   typedef internal::function_bind3<FunctionPointer, R,
                                    T1, T2, T3> function_bind_type;
   function_bind_type *bind = new function_bind_type(func);
@@ -365,7 +587,7 @@ template <typename R, typename T1, typename T2, typename T3, typename T4,
 ::future::internal::function_bind_base<R>*
 function_bind(R func(T1, T2, T3, T4),
               A1 arg1, A2 arg2, A3 arg3, A4 arg4) {
-  typedef R FunctionPointer(T1, T2, T3, T4);
+  typedef R (*FunctionPointer)(T1, T2, T3, T4);
   typedef internal::function_bind4<FunctionPointer, R,
                                    T1, T2, T3, T4> function_bind_type;
   function_bind_type *bind = new function_bind_type(func);
@@ -384,7 +606,7 @@ template <typename R, typename T1, typename T2, typename T3, typename T4,
 ::future::internal::function_bind_base<R>*
 function_bind(R func(T1, T2, T3, T4, T5),
               A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5) {
-  typedef R FunctionPointer(T1, T2, T3, T4, T5);
+  typedef R (*FunctionPointer)(T1, T2, T3, T4, T5);
   typedef internal::function_bind5<FunctionPointer, R,
                                    T1, T2, T3, T4, T5> function_bind_type;
   function_bind_type *bind = new function_bind_type(func);
@@ -405,7 +627,7 @@ template <typename R, typename T1, typename T2, typename T3, typename T4,
 function_bind(R func(T1, T2, T3, T4, T5, T6),
               A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
               A6 arg6) {
-  typedef R FunctionPointer(T1, T2, T3, T4, T5, T6);
+  typedef R (*FunctionPointer)(T1, T2, T3, T4, T5, T6);
   typedef internal::function_bind6<FunctionPointer, R,
                                    T1, T2, T3, T4, T5,
                                    T6> function_bind_type;
@@ -428,7 +650,7 @@ template <typename R, typename T1, typename T2, typename T3, typename T4,
 function_bind(R func(T1, T2, T3, T4, T5, T6, T7),
               A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
               A6 arg6, A7 arg7) {
-  typedef R FunctionPointer(T1, T2, T3, T4, T5, T6, T7);
+  typedef R (*FunctionPointer)(T1, T2, T3, T4, T5, T6, T7);
   typedef internal::function_bind7<FunctionPointer, R,
                                    T1, T2, T3, T4, T5,
                                    T6, T7> function_bind_type;
@@ -452,7 +674,7 @@ template <typename R, typename T1, typename T2, typename T3, typename T4,
 function_bind(R func(T1, T2, T3, T4, T5, T6, T7, T8),
               A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
               A6 arg6, A7 arg7, A8 arg8) {
-  typedef R FunctionPointer(T1, T2, T3, T4, T5, T6, T7, T8);
+  typedef R (*FunctionPointer)(T1, T2, T3, T4, T5, T6, T7, T8);
   typedef internal::function_bind8<FunctionPointer, R,
                                    T1, T2, T3, T4, T5,
                                    T6, T7, T8> function_bind_type;
@@ -479,7 +701,7 @@ template <typename R, typename T1, typename T2, typename T3, typename T4,
 function_bind(R func(T1, T2, T3, T4, T5, T6, T7, T8, T9),
               A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
               A6 arg6, A7 arg7, A8 arg8, A9 arg9) {
-  typedef R FunctionPointer(T1, T2, T3, T4, T5, T6, T7, T8, T9);
+  typedef R (*FunctionPointer)(T1, T2, T3, T4, T5, T6, T7, T8, T9);
   typedef internal::function_bind9<FunctionPointer, R,
                                    T1, T2, T3, T4, T5,
                                    T6, T7, T8, T9> function_bind_type;
@@ -507,11 +729,252 @@ template <typename R, typename T1, typename T2, typename T3, typename T4,
 function_bind(R func(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10),
               A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
               A6 arg6, A7 arg7, A8 arg8, A9 arg9, A10 arg10) {
-  typedef R FunctionPointer(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10);
+  typedef R (*FunctionPointer)(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10);
   typedef internal::function_bind10<FunctionPointer, R,
                                     T1, T2, T3, T4, T5,
                                     T6, T7, T8, T9, T10> function_bind_type;
   function_bind_type *bind = new function_bind_type(func);
+  bind->set_num_arguments(10);
+  bind->add_argument(arg1);
+  bind->add_argument(arg2);
+  bind->add_argument(arg3);
+  bind->add_argument(arg4);
+  bind->add_argument(arg5);
+  bind->add_argument(arg6);
+  bind->add_argument(arg7);
+  bind->add_argument(arg8);
+  bind->add_argument(arg9);
+  bind->add_argument(arg10);
+  return bind;
+}
+
+/* Class method binds */
+
+template <typename R, class C>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(void), C *object) {
+  typedef R (C::*FunctionPointer)(void);
+  typedef internal::class_method_bind0<FunctionPointer, C, R> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
+  bind->set_num_arguments(0);
+  return bind;
+}
+
+template <typename R, class C, typename T1,
+                               typename A1>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(T1), C *object,
+                 A1 arg1) {
+  typedef R (C::*FunctionPointer)(T1);
+  typedef internal::class_method_bind1<FunctionPointer, C, R,
+                                       T1> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
+  bind->set_num_arguments(1);
+  bind->add_argument(arg1);
+  return bind;
+}
+
+template <typename R, class C, typename T1, typename T2,
+                               typename A1, typename A2>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(T1, T2), C *object,
+                 A1 arg1, A2 arg2) {
+  typedef R (C::*FunctionPointer)(T1, T2);
+  typedef internal::class_method_bind2<FunctionPointer, C, R,
+                                       T1, T2> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
+  bind->set_num_arguments(2);
+  bind->add_argument(arg1);
+  bind->add_argument(arg2);
+  return bind;
+}
+
+template <typename R, class C, typename T1, typename T2, typename T3,
+                               typename A1, typename A2, typename A3>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(T1, T2, T3), C *object,
+                 A1 arg1, A2 arg2, A3 arg3) {
+  typedef R (C::*FunctionPointer)(T1, T2, T3);
+  typedef internal::class_method_bind3<FunctionPointer, C, R,
+                                       T1, T2, T3> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
+  bind->set_num_arguments(3);
+  bind->add_argument(arg1);
+  bind->add_argument(arg2);
+  bind->add_argument(arg3);
+  return bind;
+}
+
+template <typename R, class C, typename T1, typename T2, typename T3,
+                               typename T4,
+                               typename A1, typename A2, typename A3,
+                               typename A4>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(T1, T2, T3, T4), C *object,
+                 A1 arg1, A2 arg2, A3 arg3, A4 arg4) {
+  typedef R (C::*FunctionPointer)(T1, T2, T3, T4);
+  typedef internal::class_method_bind4<FunctionPointer, C, R,
+                                       T1, T2, T3, T4> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
+  bind->set_num_arguments(4);
+  bind->add_argument(arg1);
+  bind->add_argument(arg2);
+  bind->add_argument(arg3);
+  bind->add_argument(arg4);
+  return bind;
+}
+
+template <typename R, class C, typename T1, typename T2, typename T3,
+                               typename T4, typename T5,
+                               typename A1, typename A2, typename A3,
+                               typename A4, typename A5>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(T1, T2, T3, T4, T5), C *object,
+                 A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5) {
+  typedef R (C::*FunctionPointer)(T1, T2, T3, T4, T5);
+  typedef internal::class_method_bind5<FunctionPointer, C, R,
+                                       T1, T2, T3, T4, T5> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
+  bind->set_num_arguments(5);
+  bind->add_argument(arg1);
+  bind->add_argument(arg2);
+  bind->add_argument(arg3);
+  bind->add_argument(arg4);
+  bind->add_argument(arg5);
+  return bind;
+}
+
+template <typename R, class C, typename T1, typename T2, typename T3,
+                               typename T4, typename T5, typename T6,
+                               typename A1, typename A2, typename A3,
+                               typename A4, typename A5, typename A6>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(T1, T2, T3, T4, T5,
+                             T6), C *object,
+                 A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
+                 A6 arg6) {
+  typedef R (C::*FunctionPointer)(T1, T2, T3, T4, T5,
+                                  T6);
+  typedef internal::class_method_bind6<FunctionPointer, C, R,
+                                       T1, T2, T3, T4, T5,
+                                       T6> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
+  bind->set_num_arguments(6);
+  bind->add_argument(arg1);
+  bind->add_argument(arg2);
+  bind->add_argument(arg3);
+  bind->add_argument(arg4);
+  bind->add_argument(arg5);
+  bind->add_argument(arg6);
+  return bind;
+}
+
+template <typename R, class C, typename T1, typename T2, typename T3,
+                               typename T4, typename T5, typename T6,
+                               typename T7,
+                               typename A1, typename A2, typename A3,
+                               typename A4, typename A5, typename A6,
+                               typename A7>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(T1, T2, T3, T4, T5,
+                             T6, T7), C *object,
+                 A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
+                 A6 arg6, A7 arg7) {
+  typedef R (C::*FunctionPointer)(T1, T2, T3, T4, T5,
+                                  T6, T7);
+  typedef internal::class_method_bind7<FunctionPointer, C, R,
+                                       T1, T2, T3, T4, T5,
+                                       T6, T7> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
+  bind->set_num_arguments(7);
+  bind->add_argument(arg1);
+  bind->add_argument(arg2);
+  bind->add_argument(arg3);
+  bind->add_argument(arg4);
+  bind->add_argument(arg5);
+  bind->add_argument(arg6);
+  bind->add_argument(arg7);
+  return bind;
+}
+
+template <typename R, class C, typename T1, typename T2, typename T3,
+                               typename T4, typename T5, typename T6,
+                               typename T7, typename T8,
+                               typename A1, typename A2, typename A3,
+                               typename A4, typename A5, typename A6,
+                               typename A7, typename A8>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(T1, T2, T3, T4, T5,
+                             T6, T7, T8), C *object,
+                 A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
+                 A6 arg6, A7 arg7, A8 arg8) {
+  typedef R (C::*FunctionPointer)(T1, T2, T3, T4, T5,
+                                  T6, T7, T8);
+  typedef internal::class_method_bind8<FunctionPointer, C, R,
+                                       T1, T2, T3, T4, T5,
+                                       T6, T7, T8> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
+  bind->set_num_arguments(8);
+  bind->add_argument(arg1);
+  bind->add_argument(arg2);
+  bind->add_argument(arg3);
+  bind->add_argument(arg4);
+  bind->add_argument(arg5);
+  bind->add_argument(arg6);
+  bind->add_argument(arg7);
+  bind->add_argument(arg8);
+  return bind;
+}
+
+template <typename R, class C, typename T1, typename T2, typename T3,
+                               typename T4, typename T5, typename T6,
+                               typename T7, typename T8, typename T9,
+                               typename A1, typename A2, typename A3,
+                               typename A4, typename A5, typename A6,
+                               typename A7, typename A8, typename A9>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(T1, T2, T3, T4, T5,
+                             T6, T7, T8, T9), C *object,
+                 A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
+                 A6 arg6, A7 arg7, A8 arg8, A9 arg9) {
+  typedef R (C::*FunctionPointer)(T1, T2, T3, T4, T5,
+                                  T6, T7, T8, T9);
+  typedef internal::class_method_bind9<FunctionPointer, C, R,
+                                       T1, T2, T3, T4, T5,
+                                       T6, T7, T8, T9> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
+  bind->set_num_arguments(9);
+  bind->add_argument(arg1);
+  bind->add_argument(arg2);
+  bind->add_argument(arg3);
+  bind->add_argument(arg4);
+  bind->add_argument(arg5);
+  bind->add_argument(arg6);
+  bind->add_argument(arg7);
+  bind->add_argument(arg8);
+  bind->add_argument(arg9);
+  return bind;
+}
+
+template <typename R, class C, typename T1, typename T2, typename T3,
+                               typename T4, typename T5, typename T6,
+                               typename T7, typename T8, typename T9,
+                               typename T10,
+                               typename A1, typename A2, typename A3,
+                               typename A4, typename A5, typename A6,
+                               typename A7, typename A8, typename A9,
+                               typename A10>
+::future::internal::function_bind_base<R>*
+function_bind(R (C::*method)(T1, T2, T3, T4, T5,
+                             T6, T7, T8, T9, T10), C *object,
+                 A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5,
+                 A6 arg6, A7 arg7, A8 arg8, A9 arg9, A10 arg10) {
+  typedef R (C::*FunctionPointer)(T1, T2, T3, T4, T5,
+                                  T6, T7, T8, T9, T10);
+  typedef internal::class_method_bind10<FunctionPointer, C, R,
+                                        T1, T2, T3, T4, T5,
+                                        T6, T7, T8, T9, T10> function_bind_type;
+  function_bind_type *bind = new function_bind_type(method, object);
   bind->set_num_arguments(10);
   bind->add_argument(arg1);
   bind->add_argument(arg2);

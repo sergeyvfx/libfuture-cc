@@ -27,6 +27,20 @@
 #include "future/function.h"
 #include "future/placeholders.h"
 
+class MyClass {
+ public:
+  MyClass() {
+  }
+ int method() {
+   printf("Class method\n");
+   return 123;
+ }
+ int method1(int a) {
+   printf("Class method\n");
+   return a;
+ }
+};
+
 static void foo(void) {
   printf("%s\n", __func__);
 }
@@ -65,5 +79,13 @@ int main(int argc, char **argv) {
     invoke(p);
   }
   invoke(p0);
+
+  MyClass my_class;
+  function<int(void)> class_method = function_bind(&MyClass::method, &my_class);
+  printf("%d\n", class_method());
+
+  function<int(int)> class_method1 = function_bind(&MyClass::method1, &my_class, _1);
+  printf("%d\n", class_method1(1));
+
   return EXIT_SUCCESS;
 }
